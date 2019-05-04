@@ -23,7 +23,7 @@ type OrderedMap interface {
 type myOrderedMap struct {
 	OrderedMap
 	keys     Keys
-	elemType reflect.Type
+	elemKind reflect.Kind
 	m        map[interface{}]interface{}
 }
 
@@ -35,7 +35,7 @@ func (omap *myOrderedMap) isAcceptableElem(e interface{}) bool {
 	if e == nil {
 		return false
 	}
-	if reflect.TypeOf(e) != omap.elemType {
+	if reflect.TypeOf(e).Kind() != omap.elemKind {
 		return false
 	}
 	return true
@@ -93,8 +93,8 @@ func (omap *myOrderedMap) LastKey() interface{} {
 
 func (omap *myOrderedMap) SubMap(fromKey interface{}, toKey interface{}) OrderedMap {
 	newOmap := &myOrderedMap{
-		keys:     NewKeys(omap.keys.CompareFunc(), omap.keys.ElemType()),
-		elemType: omap.elemType,
+		keys:     NewKeys(omap.keys.CompareFunc(), omap.keys.ElemKind()),
+		elemKind: omap.elemKind,
 		m:        make(map[interface{}]interface{}),
 	}
 	omapLen := omap.Len()
@@ -171,20 +171,20 @@ func (omap *myOrderedMap) ToMap() map[interface{}]interface{} {
 	return replica
 }
 
-func (omap *myOrderedMap) KeyType() reflect.Type {
-	return omap.keys.ElemType()
+func (omap *myOrderedMap) KeyKind() reflect.Kind {
+	return omap.keys.ElemKind()
 }
 
-func (omap *myOrderedMap) ElemType() reflect.Type {
-	return omap.elemType
+func (omap *myOrderedMap) ElemKind() reflect.Kind {
+	return omap.elemKind
 }
 
 func (omap *myOrderedMap) String() string {
 	var buf bytes.Buffer
 	buf.WriteString("OrderedMap<")
-	buf.WriteString(omap.keys.ElemType().Kind().String())
+	buf.WriteString(omap.keys.ElemKind().String())
 	buf.WriteString(",")
-	buf.WriteString(omap.elemType.Kind().String())
+	buf.WriteString(omap.elemKind.String())
 	buf.WriteString(">{")
 	first := true
 	omapLen := omap.Len()
@@ -203,9 +203,9 @@ func (omap *myOrderedMap) String() string {
 	return buf.String()
 }
 
-func NewOrderedMap(keys Keys, elemType reflect.Type) OrderedMap {
+func NewOrderedMap(keys Keys, elemKind reflect.Kind) OrderedMap {
 	return &myOrderedMap{
 		keys:     keys,
-		elemType: elemType,
+		elemKind: elemKind,
 		m:        make(map[interface{}]interface{})}
 }

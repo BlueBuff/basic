@@ -25,7 +25,7 @@ type Map interface {
 	//获取已包含的键值所对应组成的字典值
 	ToMap() map[interface{}] interface{}
 	//获取键的类型
-	KeyType() reflect.Type
+	KeyKind() reflect.Kind
 	//获取元素的类型
-	ElemType() reflect.Type
+	ElemKind() reflect.Kind
 }

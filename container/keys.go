@@ -18,14 +18,14 @@ type Keys interface {
 	GetAll() []interface{}
 	Search(k interface{}) (index int, contains bool)
 	CompareFunc() CompareFunction
-	ElemType() reflect.Type
+	ElemKind() reflect.Kind
 }
 
 type myKeys struct {
 	Keys
 	container   []interface{}
 	compareFunc CompareFunction
-	elemType    reflect.Type
+	elemKind    reflect.Kind
 }
 
 func (keys *myKeys) Len() int {
@@ -41,7 +41,7 @@ func (keys *myKeys) Swap(i, j int) {
 }
 
 func (keys *myKeys) isAcceptableElem(k interface{}) bool {
-	if k == nil || reflect.TypeOf(k) != keys.elemType {
+	if k == nil || reflect.TypeOf(k).Kind() != keys.elemKind {
 		return false
 	}
 	return true
@@ -109,8 +109,8 @@ func (keys *myKeys) Search(k interface{}) (index int, contains bool) {
 	return
 }
 
-func (keys *myKeys) ElemType() reflect.Type {
-	return keys.elemType
+func (keys *myKeys) ElemKind() reflect.Kind {
+	return keys.elemKind
 }
 
 func (keys *myKeys) CompareFunc() CompareFunction {
@@ -120,7 +120,7 @@ func (keys *myKeys) CompareFunc() CompareFunction {
 func (keys *myKeys) String() string {
 	var buf bytes.Buffer
 	buf.WriteString("Keys<")
-	buf.WriteString(keys.elemType.Kind().String())
+	buf.WriteString(keys.elemKind.String())
 	buf.WriteString(">{")
 	first := true
 	buf.WriteString("[")
@@ -139,10 +139,132 @@ func (keys *myKeys) String() string {
 
 func NewKeys(
 	compareFunc func(interface{}, interface{}) int8,
-	elemType reflect.Type) Keys {
+	elemKind reflect.Kind) Keys {
 	return &myKeys{
 		container:   make([]interface{}, 0),
 		compareFunc: compareFunc,
-		elemType:    elemType,
+		elemKind:    elemKind,
 	}
+}
+
+func DefaultCompare(e1 interface{}, e2 interface {}) int8 {
+	if reflect.TypeOf(e1) != reflect.TypeOf(e2) {
+		return 0
+	}
+	k1 := reflect.ValueOf(e1).Kind()
+	switch k1 {
+	case reflect.Int:
+		if e1.(int) < e2.(int) {
+			return -1
+		} else if e1.(int) > e2.(int) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Int8:
+		if e1.(int8) < e2.(int8) {
+			return -1
+		} else if e1.(int8) > e2.(int8) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Int16:
+		if e1.(int16) < e2.(int16) {
+			return -1
+		} else if e1.(int16) > e2.(int16) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Int32:
+		if e1.(int32) < e2.(int32) {
+			return -1
+		} else if e1.(int32) > e2.(int32) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Int64:
+		if e1.(int64) < e2.(int64) {
+			return -1
+		} else if e1.(int64) > e2.(int64) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Float32:
+		if e1.(float32) < e2.(float32) {
+			return -1
+		} else if e1.(float32) > e2.(float32) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Float64:
+		if e1.(float64) < e2.(float64) {
+			return -1
+		} else if e1.(float64) > e2.(float64) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.String:
+		if e1.(string) < e2.(string) {
+			return -1
+		} else if e1.(string) > e2.(string) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Bool:
+		if e1.(bool) == e2.(bool) {
+			return 0
+		} else if e1.(bool) == false && e2.(bool) == true {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Uint:
+		if e1.(uint) < e2.(uint) {
+			return -1
+		} else if e1.(uint) > e2.(uint) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Uint8:
+		if e1.(uint8) < e2.(uint8) {
+			return -1
+		} else if e1.(uint8) > e2.(uint8) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Uint16:
+		if e1.(uint16) < e2.(uint16) {
+			return -1
+		} else if e1.(uint16) > e2.(uint16) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Uint32:
+		if e1.(uint32) < e2.(uint32) {
+			return -1
+		} else if e1.(uint32) > e2.(uint32) {
+			return 1
+		} else {
+			return 0
+		}
+	case reflect.Uint64:
+		if e1.(uint64) < e2.(uint64) {
+			return -1
+		} else if e1.(uint64) > e2.(uint64) {
+			return 1
+		} else {
+			return 0
+		}
+	}
+	return 0
 }

@@ -95,13 +95,12 @@ func testConcurrentMap(
 	delete(testMap, invalidKey)
 
 	// Type
-	actualElemType := cmap.ElemType()
-	if actualElemType == nil {
+	actualElemKind := cmap.ElemKind()
+	if actualElemKind == reflect.Invalid {
 		t.Errorf("ERROR: The element type of %s value is nil!\n",
 			mapType)
 		t.FailNow()
 	}
-	actualElemKind := actualElemType.Kind()
 	if actualElemKind != elemKind {
 		t.Errorf("ERROR: The element type of %s value %s is not %s!\n",
 			mapType, actualElemKind, elemKind)
@@ -109,7 +108,7 @@ func testConcurrentMap(
 	}
 	t.Logf("The element type of %s value %v is %s.",
 		mapType, cmap, actualElemKind)
-	actualKeyKind := cmap.KeyType().Kind()
+	actualKeyKind := cmap.KeyKind()
 	if actualKeyKind != elemKind {
 		t.Errorf("ERROR: The key type of %s value %s is not %s!\n",
 			mapType, actualKeyKind, keyKind)
@@ -170,9 +169,7 @@ func testConcurrentMap(
 
 func TestInt64Cmap(t *testing.T) {
 	newCmap := func() ConcurrentMap {
-		keyType := reflect.TypeOf(int64(2))
-		elemType := keyType
-		return NewConcurrentMap(keyType, elemType)
+		return NewConcurrentMap(reflect.Int64, reflect.Int64)
 	}
 	testConcurrentMap(
 		t,
@@ -185,9 +182,7 @@ func TestInt64Cmap(t *testing.T) {
 
 func TestFloat64Cmap(t *testing.T) {
 	newCmap := func() ConcurrentMap {
-		keyType := reflect.TypeOf(float64(2))
-		elemType := keyType
-		return NewConcurrentMap(keyType, elemType)
+		return NewConcurrentMap(reflect.Float64, reflect.Float64)
 	}
 	testConcurrentMap(
 		t,
@@ -200,9 +195,7 @@ func TestFloat64Cmap(t *testing.T) {
 
 func TestStringCmap(t *testing.T) {
 	newCmap := func() ConcurrentMap {
-		keyType := reflect.TypeOf(string(2))
-		elemType := keyType
-		return NewConcurrentMap(keyType, elemType)
+		return NewConcurrentMap(reflect.String, reflect.String)
 	}
 	testConcurrentMap(
 		t,
@@ -216,7 +209,7 @@ func TestStringCmap(t *testing.T) {
 func BenchmarkConcurrentMap(b *testing.B) {
 	keyType := reflect.TypeOf(int32(2))
 	elemType := keyType
-	cmap := NewConcurrentMap(keyType, elemType)
+	cmap := NewConcurrentMap(reflect.Int32, reflect.Int32)
 	var key, elem int32
 	fmt.Printf("N=%d.\n", b.N)
 	b.ResetTimer()

@@ -79,13 +79,12 @@ func testKeys(
 		t.FailNow()
 	}
 	t.Logf("The Keys(%s) value %v is sorted.", elemKind, keys)
-	actualElemType := keys.ElemType()
-	if actualElemType == nil {
+	actualElemKind := keys.ElemKind()
+	if actualElemKind == reflect.Invalid {
 		t.Errorf("ERROR: The element type of Keys(%s) value is nil!\n",
 			elemKind)
 		t.FailNow()
 	}
-	actualElemKind := actualElemType.Kind()
 	if actualElemKind != elemKind {
 		t.Errorf("ERROR: The element type of Keys(%s) value %s is not %s!\n",
 			elemKind, actualElemKind, elemKind)
@@ -136,7 +135,7 @@ func TestInt64Keys(t *testing.T) {
 						return 0
 					}
 				},
-				elemType: reflect.TypeOf(int64(1))}
+				elemKind: reflect.Int64}
 			return int64Keys
 		},
 		func() interface{} { return rand.Int63n(1000) },
@@ -158,7 +157,7 @@ func TestFloat64Keys(t *testing.T) {
 						return 0
 					}
 				},
-				reflect.TypeOf(float64(1)))
+				reflect.Float64)
 		},
 		func() interface{} { return rand.Float64() },
 		reflect.Float64)
@@ -179,7 +178,7 @@ func TestStringKeys(t *testing.T) {
 						return 0
 					}
 				},
-				reflect.TypeOf(string(1)))
+				reflect.String)
 		},
 		func() interface{} { return genRandString() },
 		reflect.String)
