@@ -14,8 +14,8 @@ type ConcurrentMap interface {
 type myConcurrentMap struct {
 	ConcurrentMap
 	m        map[interface{}]interface{}
-	keyType  reflect.Type
-	elemType reflect.Type
+	keyKind  reflect.Kind
+	elemKind reflect.Kind
 	rwmutex  sync.RWMutex
 }
 
@@ -26,10 +26,10 @@ func (cmap *myConcurrentMap) Get(key interface{}) interface{} {
 }
 
 func (cmap *myConcurrentMap) isAcceptablePair(k, e interface{}) bool {
-	if k == nil || reflect.TypeOf(k) != cmap.keyType {
+	if k == nil || reflect.TypeOf(k).Kind() != cmap.keyKind {
 		return false
 	}
-	if e == nil || reflect.TypeOf(e) != cmap.elemType {
+	if e == nil || reflect.TypeOf(e).Kind() != cmap.elemKind {
 		return false
 	}
 	return true
@@ -108,20 +108,20 @@ func (cmap *myConcurrentMap) ToMap() map[interface{}] interface{} {
 }
 
 
-func (cmap *myConcurrentMap) KeyType() reflect.Type {
-	return cmap.keyType
+func (cmap *myConcurrentMap) KeyKind() reflect.Kind {
+	return cmap.keyKind
 }
 
-func (cmap *myConcurrentMap) ElemType() reflect.Type {
-	return cmap.elemType
+func (cmap *myConcurrentMap) ElemKind() reflect.Kind {
+	return cmap.elemKind
 }
 
 func (cmap *myConcurrentMap) String() string {
 	var buf bytes.Buffer
 	buf.WriteString("ConcurrentMap<")
-	buf.WriteString(cmap.keyType.Kind().String())
+	buf.WriteString(cmap.KeyKind().String())
 	buf.WriteString(",")
-	buf.WriteString(cmap.elemType.Kind().String())
+	buf.WriteString(cmap.ElemKind().String())
 	buf.WriteString(">{")
 	first := true
 	for k, v := range cmap.m {
@@ -138,9 +138,9 @@ func (cmap *myConcurrentMap) String() string {
 	return buf.String()
 }
 
-func NewConcurrentMap(keyType, elemType reflect.Type) ConcurrentMap {
+func NewConcurrentMap(keyKind, elemKind reflect.Kind) ConcurrentMap {
 	return &myConcurrentMap{
-		keyType:  keyType,
-		elemType: elemType,
+		keyKind:  keyKind,
+		elemKind: elemKind,
 		m:        make(map[interface{}]interface{})}
 }

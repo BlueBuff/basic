@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"runtime/debug"
 	"testing"
+	"fmt"
 )
 
 func testOrderedMap(
@@ -92,13 +93,12 @@ func testOrderedMap(
 	delete(testMap, invalidKey)
 
 	// Type
-	actualElemType := omap.ElemType()
-	if actualElemType == nil {
+	actualElemKind := omap.ElemKind()
+	if actualElemKind == reflect.Invalid {
 		t.Errorf("ERROR: The element type of OrderedMap(elemType=%s) value is nil!\n",
 			elemKind)
 		t.FailNow()
 	}
-	actualElemKind := actualElemType.Kind()
 	if actualElemKind != elemKind {
 		t.Errorf("ERROR: The element type of OrderedMap(elemType=%s) value %s is not %s!\n",
 			elemKind, actualElemKind, elemKind)
@@ -106,7 +106,8 @@ func testOrderedMap(
 	}
 	t.Logf("The element type of OrderedMap(elemType=%s) value %v is %s.",
 		elemKind, omap, actualElemKind)
-	actualKeyKind := omap.KeyType().Kind()
+	actualKeyKind := omap.KeyKind()
+	fmt.Println("actualKeyKind==>",actualKeyKind)
 	keyKind := reflect.TypeOf(genKey()).Kind()
 	if actualKeyKind != elemKind {
 		t.Errorf("ERROR: The key type of OrderedMap(elemType=%s) value %s is not %s!\n",
@@ -239,9 +240,9 @@ func TestInt64Omap(t *testing.T) {
 				return 0
 			}
 		},
-		reflect.TypeOf(int64(1)))
+		reflect.Int64)
 	newOmap := func() OrderedMap {
-		return NewOrderedMap(keys, reflect.TypeOf(int64(1)))
+		return NewOrderedMap(keys, reflect.Int64)
 	}
 	testOrderedMap(
 		t,
@@ -264,9 +265,9 @@ func TestFloat64Omap(t *testing.T) {
 				return 0
 			}
 		},
-		reflect.TypeOf(float64(1)))
+		reflect.Float64)
 	newOmap := func() OrderedMap {
-		return NewOrderedMap(keys, reflect.TypeOf(float64(1)))
+		return NewOrderedMap(keys, reflect.Float64)
 	}
 	testOrderedMap(
 		t,
@@ -289,9 +290,9 @@ func TestStringOmap(t *testing.T) {
 				return 0
 			}
 		},
-		reflect.TypeOf(string(1)))
+		reflect.String)
 	newOmap := func() OrderedMap {
-		return NewOrderedMap(keys, reflect.TypeOf(string(1)))
+		return NewOrderedMap(keys, reflect.String)
 	}
 	testOrderedMap(
 		t,
