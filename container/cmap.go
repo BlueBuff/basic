@@ -21,7 +21,7 @@ type myConcurrentMap struct {
 
 func (cmap *myConcurrentMap) Get(key interface{}) interface{} {
 	cmap.rwmutex.RLock()
-	defer cmap.rwmutex.Unlock()
+	defer cmap.rwmutex.RUnlock()
 	return cmap.m[key]
 }
 
